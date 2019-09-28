@@ -23,7 +23,7 @@ public class TickController {
         this.tickService = tickService;
     }
 
-    @PostMapping("/tick")
+    @PostMapping("/app/tick")
     public ResponseEntity addTransaction(@RequestBody Tick tick) {
         Date lastAccessdate = new Date(tick.getTimestamp());
         if (TickValidator.isInFuture(lastAccessdate)) {
@@ -35,5 +35,4 @@ public class TickController {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
     }
-
 }

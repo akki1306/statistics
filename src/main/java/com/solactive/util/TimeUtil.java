@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 
 @Component
-public class DateTimeUtil {
+public class TimeUtil {
 
     public static final long MILLIS_FOR_ONE_SECOND = 1000;
 

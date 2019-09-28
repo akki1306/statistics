@@ -16,12 +16,12 @@ public class StatisticsController {
         this.statisticsService = statisticsService;
     }
 
-    @GetMapping("/statistics")
+    @GetMapping("/app/statistics")
     public ResponseEntity<Statistics> getStastistics() {
         return ResponseEntity.ok(statisticsService.getStatistics());
     }
 
-    @GetMapping("/statistics/{instrumentId}")
+    @GetMapping("/app/statistics/{instrumentId}")
     public ResponseEntity<Statistics> getStastistics(@PathVariable("instrumentId") String instrumentId) {
         return ResponseEntity.ok(statisticsService.getStatistics(instrumentId));
     }

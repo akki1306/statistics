@@ -4,7 +4,7 @@ import com.solactive.model.Statistics;
 import com.solactive.model.Tick;
 import com.solactive.service.StatisticsService;
 import com.solactive.store.Store;
-import com.solactive.util.DateTimeUtil;
+import com.solactive.util.TimeUtil;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -15,16 +15,16 @@ import java.util.Optional;
 public class StatisticsServiceImpl implements StatisticsService {
 
     private Store store;
-    private DateTimeUtil dateTimeUtil;
+    private TimeUtil timeUtil;
 
-    public StatisticsServiceImpl(Store store, DateTimeUtil dateTimeUtil) {
+    public StatisticsServiceImpl(Store store, TimeUtil timeUtil) {
         this.store = store;
-        this.dateTimeUtil = dateTimeUtil;
+        this.timeUtil = timeUtil;
     }
 
     @Override
     public Statistics getStatistics() {
-        Optional<Statistics> statistics = store.get(dateTimeUtil.currentMillis());
+        Optional<Statistics> statistics = store.get(timeUtil.currentMillis());
         if (statistics.isPresent()) {
             return statistics.get();
         } else {
@@ -37,7 +37,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public Statistics getStatistics(String instrumentId) {
-        Optional<Statistics> statistics = store.get(instrumentId, dateTimeUtil.currentMillis());
+        Optional<Statistics> statistics = store.get(instrumentId, timeUtil.currentMillis());
         if (statistics.isPresent()) {
             return statistics.get();
         } else {
@@ -51,7 +51,7 @@ public class StatisticsServiceImpl implements StatisticsService {
      * At the same time, update the store with the new tick
      */
     public Statistics updateStatistics(Tick tick) {
-        return store.updateStatistics(tick.getInstrument(), dateTimeUtil.convertTimeInMillisToSeconds(tick.getTimestamp()), tick.getPrice());
+        return store.updateStatistics(tick.getInstrument(), timeUtil.convertTimeInMillisToSeconds(tick.getTimestamp()), tick.getPrice());
     }
 
     /**
@@ -59,9 +59,9 @@ public class StatisticsServiceImpl implements StatisticsService {
      * from the current time. This is a async task which runs in a separate thread.
      */
     @Async
-    @Scheduled(fixedDelay = DateTimeUtil.MILLIS_FOR_ONE_SECOND, initialDelay = DateTimeUtil.MILLIS_FOR_ONE_SECOND)
+    @Scheduled(fixedDelay = TimeUtil.MILLIS_FOR_ONE_SECOND, initialDelay = TimeUtil.MILLIS_FOR_ONE_SECOND)
     public void cleanOldStatsPerSecond() {
-        long nowInSeconds = dateTimeUtil.currentSeconds();
+        long nowInSeconds = timeUtil.currentSeconds();
         long oldestTimeInSeconds = nowInSeconds - 60;
 
         store.removeFromStore(oldestTimeInSeconds);

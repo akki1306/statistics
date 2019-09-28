@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Store {
 
     /**
-     * concurrent hash map to store statistics for each second
+     * concurrent hash map to store statistics for every second
      */
     private ConcurrentHashMap<Long, Statistics> perSecondStatsMap = new ConcurrentHashMap<>();
 
@@ -83,6 +83,4 @@ public class Store {
         perSecondStatsMap.remove(timeKey);
         perInstrumentMap.forEachValue(1, map -> map.remove(timeKey));
     }
-
-
 }
