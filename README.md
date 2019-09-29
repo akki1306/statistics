@@ -9,7 +9,6 @@ Run command mvn spring-boot:run
 ### Assumptions
 
 - clean up thread runs every second to remove old transaction data, parallelism threshold is currently 1 but can be incremented to increase quick removal of entries from concurrent hash map.
-- Memory consumption is near O(1) as the cleanup thread removes old data simultaneously using another thread. 
 - ConcurrentHashMap allows fetching statistics in O(1) time. 
 - Statistics values are updated without using any locking mechanism by use of AtomicReference and AtomicLong variables.
 
