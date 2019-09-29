@@ -132,7 +132,7 @@ public class StatisticsServiceTest {
     }
 
     @Test
-    public void shouldBeAbleToReturnSummaryAsPerDataFromCache() {
+    public void shouldBeAbleToReturnSummaryAsPerDataFromStore() {
 
         when(timeUtil.convertTimeInMillisToSeconds(12346000L)).thenReturn(12288L);
         when(timeUtil.convertTimeInMillisToSeconds(12345000L)).thenReturn(12345L);
