@@ -3,8 +3,9 @@
 API is supposed to calculate real-time statistics summary based on tick data records received for the last 60 seconds. Calculation of statistic is made in constant time and memory (O(1)).
 
 ### Steps to Build
-
-Run command mvn spring-boot:run 
+- Import the project as maven project in Intellij (or editor of choice)
+- Enable Lombok plugin
+- Run command mvn spring-boot:run 
 
 ### Notes
 
