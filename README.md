@@ -1,6 +1,6 @@
 ## General Description
 
-API is supposed to calculate real-time statistics summary based on transaction data records received for the last 60 seconds. Calculation of statistic is made in constant time and memory (O(1)).
+API is supposed to calculate real-time statistics summary based on tick data records received for the last 60 seconds. Calculation of statistic is made in constant time and memory (O(1)).
 
 ### Steps to Build
 
@@ -8,7 +8,7 @@ Run command mvn spring-boot:run
 
 ### Assumptions
 
-- Clean up thread runs every second to remove old transaction data, parallelism threshold is currently 1 but can be increased.
+- Clean up thread runs every second to remove old tick data, parallelism threshold is currently 1 but can be increased.
 - ConcurrentHashMap allows fetching statistics in O(1) time. 
 - Statistics values are updated without using any locking mechanism by use of AtomicReference and AtomicLong variables.
 
@@ -21,7 +21,7 @@ Run command mvn spring-boot:run
 
 #### POST /app/tick
 
-This endpoint is called every time a new transaction happened.
+This endpoint is called every time a new tick happened.
 
 Request:
 
@@ -38,12 +38,12 @@ advance so we add them dynamically).
 
 Response: Empty body with either 201 or 204.
  - 201 - in case of success
- - 204 - if transaction is older than 60 seconds
+ - 204 - if tick is older than 60 seconds
  
 #### GET /statistics
 
 This is the main endpoint of this task, this endpoint have to execute in constant time and
-memory (O(1)). It returns the statistic based on the transactions which happened in the last 60
+memory (O(1)). It returns the statistic based on the ticks which happened in the last 60
 seconds.
 
 Response:
