@@ -26,7 +26,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public Statistics getStatistics() {
-        Optional<Statistics> statistics = store.get(timeUtil.currentMillis());
+        Optional<Statistics> statistics = store.get(timeUtil.currentSeconds());
         if (statistics.isPresent()) {
             log.debug("Statistics found for current time in seconds " + timeUtil.currentSeconds());
             return statistics.get();
@@ -41,7 +41,7 @@ public class StatisticsServiceImpl implements StatisticsService {
 
     @Override
     public Statistics getStatistics(String instrumentId) {
-        Optional<Statistics> statistics = store.get(instrumentId, timeUtil.currentMillis());
+        Optional<Statistics> statistics = store.get(instrumentId, timeUtil.currentSeconds());
         if (statistics.isPresent()) {
             log.debug("Statistics found for current time in seconds " + timeUtil.currentSeconds() + " and instrument id " + instrumentId);
             return statistics.get();
@@ -70,11 +70,10 @@ public class StatisticsServiceImpl implements StatisticsService {
      */
     @Async
     @Scheduled(fixedDelay = TimeUtil.MILLIS_FOR_ONE_SECOND, initialDelay = TimeUtil.MILLIS_FOR_ONE_SECOND)
-    public void cleanOldStatsPerSecond() {
+    public void cleanOldStatistics() {
         long nowInSeconds = timeUtil.currentSeconds();
-        long oldestTimeInSeconds = nowInSeconds - 60;
         log.debug("Cleaning statistics from store for time in seconds " + nowInSeconds);
-        store.removeFromStore(oldestTimeInSeconds);
+        store.removeOldEntriesFromStore();
     }
 
 }

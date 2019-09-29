@@ -11,5 +11,5 @@ public interface StatisticsService {
 
     Statistics updateStatistics(Tick tick);
 
-    void cleanOldStatsPerSecond();
+    void cleanOldStatistics();
 }

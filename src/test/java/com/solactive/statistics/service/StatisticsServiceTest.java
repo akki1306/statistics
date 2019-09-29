@@ -3,7 +3,9 @@ package com.solactive.statistics.service;
 import com.solactive.model.Statistics;
 import com.solactive.model.Tick;
 import com.solactive.service.StatisticsService;
+import com.solactive.service.TickService;
 import com.solactive.service.impl.StatisticsServiceImpl;
+import com.solactive.service.impl.TickServiceImpl;
 import com.solactive.store.Store;
 import com.solactive.util.TimeUtil;
 import org.hamcrest.CoreMatchers;
@@ -20,14 +22,17 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class StatisticsServiceTest {
 
-    private StatisticsService statsService;
+    private TickService tickService;
+    private StatisticsService statisticsService;
 
     private TimeUtil timeUtil;
 
     @Before
     public void setUp() {
         timeUtil = mock(TimeUtil.class);
-        statsService = new StatisticsServiceImpl(new Store(), timeUtil);
+        Store store = new Store(timeUtil);
+        statisticsService = new StatisticsServiceImpl(store, timeUtil);
+        tickService = new TickServiceImpl(statisticsService);
     }
 
     @Test
@@ -37,7 +42,7 @@ public class StatisticsServiceTest {
         Tick tick = new Tick("ORACLE", 45.0, 12345000L);
 
         //when
-        Statistics statistics = statsService.updateStatistics(tick);
+        Statistics statistics = tickService.saveTick(tick);
 
         //then
         assertThat(statistics.getCount().get(), is(1L));
@@ -56,9 +61,9 @@ public class StatisticsServiceTest {
         Tick tick3 = new Tick("GOOGLE", 49.0, 12345000L);
 
         //when
-        statsService.updateStatistics(tick1);
-        statsService.updateStatistics(tick2);
-        Statistics statistics = statsService.updateStatistics(tick3);
+        tickService.saveTick(tick1);
+        tickService.saveTick(tick2);
+        Statistics statistics = tickService.saveTick(tick3);
 
         //then
         assertThat(statistics.getCount().get(), is(3L));
@@ -80,12 +85,12 @@ public class StatisticsServiceTest {
         Tick newTickOne = new Tick("ORACLE", 47.0, 12345000L);
         Tick newTickTwo = new Tick("GOOGLE", 49.0, 12345000L);
 
-        statsService.updateStatistics(oldTick);
-        statsService.updateStatistics(newTickOne);
-        Statistics statistics = statsService.updateStatistics(newTickTwo);
+        tickService.saveTick(oldTick);
+        tickService.saveTick(newTickOne);
+        Statistics statistics = tickService.saveTick(newTickTwo);
 
         //when
-        statsService.cleanOldStatsPerSecond();
+        statisticsService.cleanOldStatistics();
 
         //then
         assertThat(statistics.getCount().get(), is(2L));
@@ -98,17 +103,15 @@ public class StatisticsServiceTest {
     @Test
     public void shouldBeAbleToReturnOriginalSummaryIfThereAreNoOlderTicksThan60SecondsWhichAreToBeCleaned() {
         //given
-        when(timeUtil.currentMillis()).thenReturn(12348L);
-
         Tick oldTick = new Tick("IBM", 45.0, 12346000L);
         Tick newTickOne = new Tick("GOOGLE", 47.0, 12346000L);
         Tick newTickTwo = new Tick("MICROSOFT", 49.0, 12346000L);
 
         //when
-        statsService.updateStatistics(oldTick);
-        statsService.updateStatistics(newTickOne);
-        Statistics statistics = statsService.updateStatistics(newTickTwo);
-        statsService.cleanOldStatsPerSecond();
+        tickService.saveTick(oldTick);
+        tickService.saveTick(newTickOne);
+        Statistics statistics = tickService.saveTick(newTickTwo);
+        statisticsService.cleanOldStatistics();
 
         //then
         assertThat(statistics.getCount().get(), is(3L));
@@ -121,7 +124,7 @@ public class StatisticsServiceTest {
     @Test
     public void shouldReturnDefaultStatsIfThereAreNoTicksInStore() {
         //when
-        Statistics statsSummary = statsService.getStatistics();
+        Statistics statsSummary = statisticsService.getStatistics();
 
         //then
         assertThat(statsSummary.getCount().get(), CoreMatchers.is(0L));
@@ -132,37 +135,16 @@ public class StatisticsServiceTest {
     }
 
     @Test
-    public void shouldBeAbleToReturnSummaryAsPerDataFromStore() {
-
-        when(timeUtil.convertTimeInMillisToSeconds(12346000L)).thenReturn(12288L);
-        when(timeUtil.convertTimeInMillisToSeconds(12345000L)).thenReturn(12345L);
-        when(timeUtil.convertTimeInMillisToSeconds(12345000L)).thenReturn(12345L);
-
-        Tick oldTick = new Tick("IBM", 45.0, 12346000L);
-        Tick newTickOne = new Tick("ORACLE", 47.0, 12345000L);
-        Tick newTickTwo = new Tick("GOOGLE", 49.0, 12345000L);
-        statsService.updateStatistics(oldTick);
-        statsService.updateStatistics(newTickOne);
-        Statistics statistics = statsService.updateStatistics(newTickTwo);
-
-        assertThat(statistics.getCount(), is(3L));
-        assertThat(statistics.getAvg(), is(47.0));
-        assertThat(statistics.getSum(), is(141.0));
-        assertThat(statistics.getMin(), is(45.0));
-        assertThat(statistics.getMax(), is(49.0));
-    }
-
-    @Test
     public void shouldReturnStatisticsBaseOnInstrumentId() {
         //given
         when(timeUtil.convertTimeInMillisToSeconds(12348000L)).thenReturn(12348L);
-        when(timeUtil.currentMillis()).thenReturn(12348L);
+        when(timeUtil.currentSeconds()).thenReturn(12348L);
 
         Tick tick = new Tick("IBM", 45.0, 12348000L);
 
         //when
-        statsService.updateStatistics(tick);
-        Statistics statistics = statsService.getStatistics("IBM");
+        tickService.saveTick(tick);
+        Statistics statistics = statisticsService.getStatistics("IBM");
 
         //then
         assertThat(statistics.getAvg().get(), is(45.0));

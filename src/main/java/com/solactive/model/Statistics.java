@@ -1,9 +1,6 @@
 package com.solactive.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -17,6 +14,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Statistics {
     private AtomicReference<Double> avg = new AtomicReference<>(0.0d);
     private AtomicReference<Double> max = new AtomicReference<>(Double.NEGATIVE_INFINITY);

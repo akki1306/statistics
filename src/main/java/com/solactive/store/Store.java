@@ -1,6 +1,7 @@
 package com.solactive.store;
 
 import com.solactive.model.Statistics;
+import com.solactive.util.TimeUtil;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -8,6 +9,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class Store {
+
+    private final TimeUtil timeUtil;
+
+    public Store(TimeUtil timeUtil) {
+        this.timeUtil = timeUtil;
+    }
 
     /**
      * concurrent hash map to store statistics for every second
@@ -36,6 +43,7 @@ public class Store {
                     newPerSecondStatistic.accept(value);
                     return newPerSecondStatistic;
                 });
+
         perSecondStatsMap.put(timeKey, statistics);
 
         Statistics statisticsPerInstrument = get(instrumentId, timeKey)
@@ -76,11 +84,18 @@ public class Store {
 
     /**
      * removes old data from the store
-     *
-     * @param timeKey timekey for which data needs to be removed
      */
-    public void removeFromStore(Long timeKey) {
-        perSecondStatsMap.remove(timeKey);
-        perInstrumentMap.forEachValue(1, map -> map.remove(timeKey));
+    public void removeOldEntriesFromStore() {
+        long timeKey = timeUtil.currentSeconds();
+        perSecondStatsMap.forEach((aLong, statistics) -> {
+            if (aLong < timeKey) {
+                perSecondStatsMap.remove(aLong);
+            }
+        });
+        perInstrumentMap.forEach((s, longStatisticsConcurrentHashMap) -> longStatisticsConcurrentHashMap.forEach((aLong, statistics) -> {
+            if (aLong < timeKey) {
+                longStatisticsConcurrentHashMap.remove(aLong);
+            }
+        }));
     }
 }
