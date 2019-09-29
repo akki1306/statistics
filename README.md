@@ -6,7 +6,7 @@ API is supposed to calculate real-time statistics summary based on tick data rec
 
 Run command mvn spring-boot:run 
 
-### Assumptions
+### Notes
 
 - Clean up thread runs every second to remove old tick data, parallelism threshold is currently 1 but can be increased.
 - ConcurrentHashMap allows fetching statistics in O(1) time. 
