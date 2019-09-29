@@ -14,7 +14,8 @@ Run command mvn spring-boot:run
 
 ### Further improvements
 
-- Use google guava library for industrial strength cache eviction data structures and implement a time base sliding window.
+- Use google guava library for industrial strength cache eviction data structure and implement a time base sliding window
+ to update statistics per second and per instrument.
 
 
 ## API endpoints
