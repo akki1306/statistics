@@ -48,10 +48,10 @@ seconds.
 Response:
 
     {
-    	"sum": 1000,
-    	"avg": 100,
-    	"max": 200,
-    	"min": 50,
+    	"sum": 1000.0,
+    	"avg": 100.0,
+    	"max": 200.0,
+    	"min": 50.0,
     	"count": 10
     }
 
