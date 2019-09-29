@@ -8,13 +8,14 @@ Run command mvn spring-boot:run
 
 ### Assumptions
 
-- clean up thread runs every second to remove old transaction data, parallelism threshold is currently 1 but can be incremented to increase quick removal of entries from concurrent hash map.
+- Clean up thread runs every second to remove old transaction data, parallelism threshold is currently 1 but can be increased.
 - ConcurrentHashMap allows fetching statistics in O(1) time. 
 - Statistics values are updated without using any locking mechanism by use of AtomicReference and AtomicLong variables.
 
 ### Further improvements
 
 - Use google guava library for industrial strength cache eviction data structures and implement a time base sliding window.
+
 
 ## API endpoints
 
@@ -25,9 +26,9 @@ This endpoint is called every time a new transaction happened.
 Request:
 
     {
-      "instrument": "IBM.N",
-    	"amount": 12.3,
-    	"timestamp": 1478192204000
+       "instrument": "IBM.N",
+       "amount": 12.3,
+       "timestamp": 1478192204000
     }
 where:
  - instrument - a financial instrument identifier (string; list of instruments is not known to our service in
@@ -56,11 +57,11 @@ Response:
     }
 
 where:
- - sum: double specifying total sum of transaction values in the last 60 seconds
- - avg: double specifying average of all transaction values in the last 60 seconds
- - max: double specifying highest transaction value in the last 60 seconds
- - max: double specifying lowest transaction value in the last 60 seconds
- - count: long specifying total number of transactions happened in the last 60 seconds
+ - sum: total sum of tick values in the last 60 seconds
+ - avg: average of all tick values in the last 60 seconds
+ - max: highest tick value in the last 60 seconds
+ - max: lowest tick value in the last 60 seconds
+ - count: specifying total number of tick happened in the last 60 seconds
 
 
 #### GET /statistics/{id}
